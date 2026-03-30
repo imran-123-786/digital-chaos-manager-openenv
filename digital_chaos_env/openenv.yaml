@@ -1,0 +1,13 @@
+spec_version: 1
+name: digital_chaos_env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+metadata:
+  title: Digital Chaos Manager
+  description: Productivity environment for task prioritization under digital distractions.
+  tags:
+    - openenv
+    - productivity
+    - decision-making

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openenv-digital_chaos_env"
+version = "0.2.0"
+description = "Digital Chaos Manager environment for OpenEnv"
+requires-python = ">=3.10"
+dependencies = [
+    "openenv-core[core]>=0.2.1",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "requests>=2.32.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+server = "digital_chaos_env.server.app:main"
+baseline = "digital_chaos_env.baseline:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["digital_chaos_env", "digital_chaos_env.server", "digital_chaos_env.tasks", "digital_chaos_env.graders"]
+package-dir = { "digital_chaos_env" = ".", "digital_chaos_env.server" = "server", "digital_chaos_env.tasks" = "tasks", "digital_chaos_env.graders" = "graders" }
