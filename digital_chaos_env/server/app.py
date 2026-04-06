@@ -54,6 +54,16 @@ def reset(
     return _payload(observation, reward, done, info)
 
 
+@app.post("/reset")
+def reset_post(
+    task_id: str = Query(default="easy"),
+    profile: str = Query(default="office"),
+    seed: int | None = Query(default=None),
+) -> dict[str, Any]:
+    observation, reward, done, info = env.reset(task_id, profile=profile, seed=seed)
+    return _payload(observation, reward, done, info)
+
+
 @app.post("/step")
 def step(action: DigitalChaosAction) -> dict[str, Any]:
     observation, reward, done, info = env.step(action)
