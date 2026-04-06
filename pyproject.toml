@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digital-chaos-manager-openenv"
+version = "0.2.1"
+description = "Digital Chaos Manager OpenEnv environment"
+requires-python = ">=3.10"
+dependencies = [
+  "openenv-core[core]>=0.2.1",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.0",
+  "requests>=2.32.0",
+  "openai>=2.0.0",
+]
+
+[project.scripts]
+server = "digital_chaos_env.server.app:main"
+inference = "inference:main"
