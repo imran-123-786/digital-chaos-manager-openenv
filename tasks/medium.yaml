@@ -1,0 +1,8 @@
+name: medium
+difficulty: medium
+objective: Prioritize tasks while handling mixed notifications.
+reset:
+  task_id: medium
+  profile: office
+  seed: 202
+grader: graders/medium_grader.py

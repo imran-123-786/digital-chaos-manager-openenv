@@ -1,0 +1,8 @@
+name: hard
+difficulty: hard
+objective: Maximize productivity under heavy interruptions.
+reset:
+  task_id: hard
+  profile: support
+  seed: 303
+grader: graders/hard_grader.py

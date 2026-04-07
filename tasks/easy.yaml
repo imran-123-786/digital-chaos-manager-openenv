@@ -1,0 +1,8 @@
+name: easy
+difficulty: easy
+objective: Complete core tasks with minimal distraction.
+reset:
+  task_id: easy
+  profile: office
+  seed: 101
+grader: graders/easy_grader.py
