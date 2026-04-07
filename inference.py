@@ -18,9 +18,12 @@ LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 TASK_IDS = ["easy", "medium", "hard"]
 
 
-def _log(tag: str, payload: dict[str, Any]) -> None:
-    # Required structured stdout format
-    print(f"{tag} {json.dumps(payload, ensure_ascii=False)}")
+def _kv_line(prefix: str, payload: dict[str, Any]) -> None:
+    # Validator expects bracketed blocks in stdout.
+    parts = []
+    for key, value in payload.items():
+        parts.append(f"{key}={value}")
+    print(f"{prefix} " + " ".join(parts), flush=True)
 
 
 def _fallback_action(observation: dict[str, Any]) -> dict[str, Any]:
@@ -75,14 +78,14 @@ def main() -> None:
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
     env = DigitalChaosEnv(base_url=env_base_url)
 
-    _log(
-        "START",
+    _kv_line(
+        "[START]",
         {
             "api_base_url": API_BASE_URL,
             "model_name": MODEL_NAME,
-            "local_image_name": LOCAL_IMAGE_NAME,
+            "local_image_name": LOCAL_IMAGE_NAME or "none",
             "env_base_url": env_base_url,
-            "tasks": TASK_IDS,
+            "tasks": ",".join(TASK_IDS),
         },
     )
 
@@ -102,13 +105,13 @@ def main() -> None:
             step_result = env.step(action)
             step_count += 1
             total_reward += step_result.reward
-            _log(
-                "STEP",
+            _kv_line(
+                "[STEP]",
                 {
                     "task_id": task_id,
                     "step": step_count,
                     "action_type": action.action_type.value,
-                    "target_id": action.target_id,
+                    "target_id": action.target_id or "none",
                     "reward": step_result.reward,
                     "done": step_result.done,
                 },
@@ -124,7 +127,16 @@ def main() -> None:
         results.append(result)
 
     avg_score = sum(r["score"] for r in results) / len(results)
-    _log("END", {"results": results, "average_score": round(avg_score, 4)})
+    for item in results:
+        _kv_line(
+            "[END]",
+            {
+                "task": item["task_id"],
+                "score": item["score"],
+                "total_reward": item["total_reward"],
+            },
+        )
+    _kv_line("[END]", {"average_score": round(avg_score, 4), "tasks": len(results)})
 
 
 if __name__ == "__main__":
