@@ -16,6 +16,11 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 
 TASK_IDS = ["easy", "medium", "hard"]
+TASK_GRADERS = {
+    "easy": "graders/easy_grader.py",
+    "medium": "graders/medium_grader.py",
+    "hard": "graders/hard_grader.py",
+}
 
 
 def _kv_line(prefix: str, payload: dict[str, Any]) -> None:
@@ -78,19 +83,19 @@ def main() -> None:
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
     env = DigitalChaosEnv(base_url=env_base_url)
 
-    _kv_line(
-        "[START]",
-        {
-            "api_base_url": API_BASE_URL,
-            "model_name": MODEL_NAME,
-            "local_image_name": LOCAL_IMAGE_NAME or "none",
-            "env_base_url": env_base_url,
-            "tasks": ",".join(TASK_IDS),
-        },
-    )
-
     results = []
     for task_id in TASK_IDS:
+        _kv_line(
+            "[START]",
+            {
+                "task": task_id,
+                "grader": TASK_GRADERS[task_id],
+                "api_base_url": API_BASE_URL,
+                "model_name": MODEL_NAME,
+                "local_image_name": LOCAL_IMAGE_NAME or "none",
+                "env_base_url": env_base_url,
+            },
+        )
         step_result = env.reset(task_id=task_id)
         total_reward = 0.0
         step_count = 0
@@ -108,7 +113,7 @@ def main() -> None:
             _kv_line(
                 "[STEP]",
                 {
-                    "task_id": task_id,
+                    "task": task_id,
                     "step": step_count,
                     "action_type": action.action_type.value,
                     "target_id": action.target_id or "none",
@@ -132,11 +137,12 @@ def main() -> None:
             "[END]",
             {
                 "task": item["task_id"],
+                "grader": TASK_GRADERS[item["task_id"]],
                 "score": item["score"],
                 "total_reward": item["total_reward"],
             },
         )
-    _kv_line("[END]", {"average_score": round(avg_score, 4), "tasks": len(results)})
+    _kv_line("[END]", {"summary": "overall", "average_score": round(avg_score, 4), "tasks": len(results)})
 
 
 if __name__ == "__main__":

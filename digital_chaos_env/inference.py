@@ -7,6 +7,11 @@ from digital_chaos_env.client import DigitalChaosEnv
 from digital_chaos_env.models import ActionType, DigitalChaosAction
 
 TASK_IDS = ["easy", "medium", "hard"]
+TASK_GRADERS = {
+    "easy": "graders/easy_grader.py",
+    "medium": "graders/medium_grader.py",
+    "hard": "graders/hard_grader.py",
+}
 
 
 def get_required_env(name):
@@ -90,9 +95,20 @@ def main():
     client = OpenAI(base_url=api_base_url, api_key=hf_token)
     env = DigitalChaosEnv(base_url=env_base_url)
 
+    print(
+        f"[START] summary=run api_base_url={api_base_url} model_name={model_name} env_base_url={env_base_url}",
+        flush=True,
+    )
+
     results = []
     for task_id in TASK_IDS:
+        print(f"[START] task={task_id} grader={TASK_GRADERS[task_id]}", flush=True)
         results.append(run_episode(env, client, model_name, task_id))
+        latest = results[-1]
+        print(
+            f"[END] task={task_id} grader={TASK_GRADERS[task_id]} score={latest['score']} total_reward={latest['total_reward']}",
+            flush=True,
+        )
 
     avg_score = sum(item["score"] for item in results) / len(results)
 
@@ -104,7 +120,8 @@ def main():
         "average_score": round(avg_score, 4),
     }
 
-    print(json.dumps(output, indent=2))
+    print(f"[END] summary=overall average_score={round(avg_score, 4)} tasks={len(results)}", flush=True)
+    print(json.dumps(output, indent=2), flush=True)
 
 
 if __name__ == "__main__":
