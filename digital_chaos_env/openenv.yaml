@@ -11,3 +11,16 @@ metadata:
     - openenv
     - productivity
     - decision-making
+tasks:
+  - id: easy
+    name: Focused Morning Sprint
+    difficulty: easy
+    grader: graders/easy_grader.py
+  - id: medium
+    name: Mixed Priority Office Block
+    difficulty: medium
+    grader: graders/medium_grader.py
+  - id: hard
+    name: Chaos Afternoon Crunch
+    difficulty: hard
+    grader: graders/hard_grader.py
