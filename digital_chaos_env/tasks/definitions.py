@@ -86,6 +86,7 @@ def list_task_specs() -> list[dict]:
                 "task_count": len(cfg["tasks"]),
                 "notification_count": len(cfg["notifications"]),
                 "grader": f"graders/{task_id}_grader.py",
+                "grader_path": f"graders/{task_id}_grader.py",
             }
         )
     return specs
